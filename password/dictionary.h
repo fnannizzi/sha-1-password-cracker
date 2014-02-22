@@ -17,11 +17,12 @@ namespace dict
 	{
 	private:
 		std::unordered_map<std::string, Entry*> dictionary_map;
+		void addEntry(std::string entry_word);
 
 	public:
 		Dictionary(int num_buckets);
 		bool loadDictionary(std::string filename);
-		void addEntry(std::string entry_word);
+		Entry* lookupEntry(std::string key);
 	};
 
 

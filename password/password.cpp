@@ -4,15 +4,20 @@
 #include "stdafx.h"
 #include "sha1.h"
 #include "dictionary.h"
+#include "decrypt.h"
 #include <string>
 #include <iostream>
 
 void menu();
 void basicHashing();
 void loadDictionary(dict::Dictionary *dictionary);
+void decrypt(dict::Dictionary *dictionary);
+void testBruteForce(dict::Dictionary *dictionary);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	//dict::Dictionary *dictionary = new dict::Dictionary(100000);
+	//testBruteForce(dictionary);
 	menu();
 	return 0;
 }
@@ -32,7 +37,7 @@ void menu(){
 
 		if (!std::getline(std::cin, input))
 		{
-			std::cout << "Invalid input. Please enter a a number between 1-4 to select an option." << std::endl;
+			std::cout << "Invalid input. Please enter a number between 1-4 to select an option." << std::endl;
 			input = "";
 		}
 		else if (input.compare("1") == 0)
@@ -50,6 +55,7 @@ void menu(){
 		else if (input.compare("3") == 0)
 		{
 			std::cout << "Option 3 selected. " << std::endl;
+			decrypt(dictionary);
 			input = "";
 		}
 		else if (input.compare("4") == 0)
@@ -59,7 +65,7 @@ void menu(){
 		}
 		else
 		{
-			std::cout << "Invalid input. Please enter a a number between 1-4 to select an option." << std::endl;
+			std::cout << "Invalid input. Please enter a number between 1-4 to select an option." << std::endl;
 			input = "";
 		}
 	}
@@ -76,7 +82,7 @@ void basicHashing()
 
 		if (!std::getline(std::cin, input))
 		{
-			std::cout << "Invalid input. Please enter a a number between 1-2 to select an option." << std::endl;
+			std::cout << "Invalid input. Please enter a number between 1-2 to select an option." << std::endl;
 			input = "";
 		}
 		else if (input.compare("1") == 0)
@@ -110,7 +116,7 @@ void basicHashing()
 		}
 		else
 		{
-			std::cout << "Invalid input. Please enter a a number between 1-2 to select an option." << std::endl;
+			std::cout << "Invalid input. Please enter a number between 1-2 to select an option." << std::endl;
 			input = "";
 		}
 	}
@@ -128,7 +134,7 @@ void loadDictionary(dict::Dictionary *dictionary)
 
 		if (!std::getline(std::cin, input))
 		{
-			std::cout << "Invalid input. Please enter a a number between 1-2 to select an option." << std::endl;
+			std::cout << "Invalid input. Please enter a number between 1-3 to select an option." << std::endl;
 			input = "";
 		}
 		else if (input.compare("1") == 0)
@@ -180,8 +186,88 @@ void loadDictionary(dict::Dictionary *dictionary)
 		}
 		else
 		{
+			std::cout << "Invalid input. Please enter a number between 1-3 to select an option." << std::endl;
+			input = "";
+		}
+	}
+}
+
+void decrypt(dict::Dictionary *dictionary)
+{
+	dcry::Decrypt *decrypter = new dcry::Decrypt(dictionary);
+
+	std::string input = "";
+	while (input == "")
+	{
+		std::cout << "Select an option: " << std::endl;
+		std::cout << "  1. Use default password file " << std::endl;
+		std::cout << "  2. Use custom password file " << std::endl;
+		std::cout << "  3. Return to main menu " << std::endl;
+
+		if (!std::getline(std::cin, input))
+		{
+			std::cout << "Invalid input. Please enter a number between 1-3 to select an option." << std::endl;
+			input = "";
+		}
+		else if (input.compare("1") == 0)
+		{
+			std::cout << "Option 1 selected. Loading default password file pass.txt." << std::endl;
+			if (decrypter->decrypt("pass.txt"))
+			{
+				std::cout << "Decrypting from pass.txt completed." << std::endl;
+			}
+			else
+			{
+				std::cout << "Invalid password filename. Restarting... " << std::endl;
+			}
+			input = "";
+
+		}
+		else if (input.compare("2") == 0)
+		{
+			std::cout << "Option 2 selected. Please enter the filename of the custom password file:" << std::endl;
+			std::string filename = "";
+
+			if (!std::getline(std::cin, filename))
+			{
+				std::cout << "Please enter a valid filename. Restarting..." << std::endl;
+			}
+			else if (filename.compare("") == 0)
+			{
+				std::cout << "Please enter a valid filename. Restarting..." << std::endl;
+			}
+			else
+			{
+				std::cout << "Loading password file... " << std::endl;
+				if (decrypter->decrypt(filename))
+				{
+					std::cout << "Decrypting from " << filename << " completed." << std::endl;
+				}
+				else
+				{
+					std::cout << "Invalid password filename. Restarting... " << std::endl;
+				}
+			}
+			input = "";
+
+		}
+		else if (input.compare("3") == 0)
+		{
+			std::cout << "Option 3 selected. Returning to main menu... " << std::endl;
+			return;
+		}
+		else
+		{
 			std::cout << "Invalid input. Please enter a a number between 1-3 to select an option." << std::endl;
 			input = "";
 		}
 	}
+}
+
+void testBruteForce(dict::Dictionary *dictionary)
+{
+	bool didItWork = dictionary->loadDictionary("d8.txt");
+	dcry::Decrypt *decrypter = new dcry::Decrypt(dictionary);
+	didItWork = decrypter->decrypt("pass_test.txt");
+
 }

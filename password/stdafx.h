@@ -9,10 +9,7 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include <windows.h>
-#include <fstream>
-#include <string>
-#include "sha1.h"
+
 
 
 // TODO: reference additional headers your program requires here
