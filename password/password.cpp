@@ -16,8 +16,6 @@ void testBruteForce(dict::Dictionary *dictionary);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//dict::Dictionary *dictionary = new dict::Dictionary(100000);
-	//testBruteForce(dictionary);
 	menu();
 	return 0;
 }
@@ -139,17 +137,23 @@ void loadDictionary(dict::Dictionary *dictionary)
 		}
 		else if (input.compare("1") == 0)
 		{
-			std::cout << "Option 1 selected. Loading default dictionary d8.txt." << std::endl;
-			if (dictionary->loadDictionary("d8.txt"))
+			std::cout << "Option 1 selected." << std::endl;
+			if (dictionary->matchFilenames("d8.txt"))
 			{
-				std::cout << "Dictionary from d8.txt loaded." << std::endl;
+				std::cout << "Default dictionary already loaded. Restarting... " << std::endl;
 			}
-			else
-			{
-				std::cout << "Invalid dictionary filename. Restarting... " << std::endl;
+			else {
+				std::cout << "Loading default dictionary d8.txt." << std::endl;
+				if (dictionary->loadDictionary("d8.txt"))
+				{
+					std::cout << "Dictionary from d8.txt loaded." << std::endl;
+				}
+				else
+				{
+					std::cout << "Invalid dictionary filename. Restarting... " << std::endl;
+				}
 			}
 			input = "";
-
 		}
 		else if (input.compare("2") == 0)
 		{
@@ -166,14 +170,20 @@ void loadDictionary(dict::Dictionary *dictionary)
 			}
 			else
 			{
-				std::cout << "Loading dictionary... " << std::endl;
-				if (dictionary->loadDictionary(filename))
+				if (dictionary->matchFilenames(filename))
 				{
-					std::cout << "Dictionary from " << filename << " loaded." << std::endl;
+					std::cout << "Dictionary with that filename already loaded. Restarting... " << std::endl;
 				}
 				else
 				{
-					std::cout << "Invalid dictionary filename. Restarting... " << std::endl;
+					if (dictionary->loadDictionary(filename))
+					{
+						std::cout << "Dictionary from " << filename << " loaded." << std::endl;
+					}
+					else
+					{
+						std::cout << "Invalid dictionary filename. Restarting... " << std::endl;
+					}
 				}
 			}
 			input = "";
@@ -211,37 +221,18 @@ void decrypt(dict::Dictionary *dictionary)
 		}
 		else if (input.compare("1") == 0)
 		{
-			std::cout << "Option 1 selected. Loading default password file pass.txt." << std::endl;
-			if (decrypter->decrypt("pass.txt"))
+			std::cout << "Option 1 selected." << std::endl;
+			if (!dictionary->dictionaryloaded())
 			{
-				std::cout << "Decrypting from pass.txt completed." << std::endl;
+				std::cout << "Please load a dictionary before attempting to decrypt. Returning to main menu... " << std::endl;
+				return;
 			}
 			else
 			{
-				std::cout << "Invalid password filename. Restarting... " << std::endl;
-			}
-			input = "";
-
-		}
-		else if (input.compare("2") == 0)
-		{
-			std::cout << "Option 2 selected. Please enter the filename of the custom password file:" << std::endl;
-			std::string filename = "";
-
-			if (!std::getline(std::cin, filename))
-			{
-				std::cout << "Please enter a valid filename. Restarting..." << std::endl;
-			}
-			else if (filename.compare("") == 0)
-			{
-				std::cout << "Please enter a valid filename. Restarting..." << std::endl;
-			}
-			else
-			{
-				std::cout << "Loading password file... " << std::endl;
-				if (decrypter->decrypt(filename))
+				std::cout << "Loading default password file pass.txt." << std::endl;
+				if (decrypter->decrypt("pass.txt"))
 				{
-					std::cout << "Decrypting from " << filename << " completed." << std::endl;
+					std::cout << "Decrypting from pass.txt completed." << std::endl;
 				}
 				else
 				{
@@ -249,7 +240,42 @@ void decrypt(dict::Dictionary *dictionary)
 				}
 			}
 			input = "";
+		}
+		else if (input.compare("2") == 0)
+		{
+			std::cout << "Option 2 selected." << std::endl;
+			if (!dictionary->dictionaryloaded())
+			{
+				std::cout << "Please load a dictionary before attempting to decrypt. Returning to main menu... " << std::endl;
+				return;
+			}
+			else
+			{
+				std::cout << "Please enter the filename of the custom password file:" << std::endl;
+				std::string filename = "";
 
+				if (!std::getline(std::cin, filename))
+				{
+					std::cout << "Please enter a valid filename. Restarting..." << std::endl;
+				}
+				else if (filename.compare("") == 0)
+				{
+					std::cout << "Please enter a valid filename. Restarting..." << std::endl;
+				}
+				else
+				{
+					std::cout << "Loading password file... " << std::endl;
+					if (decrypter->decrypt(filename))
+					{
+						std::cout << "Decrypting from " << filename << " completed." << std::endl;
+					}
+					else
+					{
+						std::cout << "Invalid password filename. Restarting... " << std::endl;
+					}
+				}
+			}
+			input = "";
 		}
 		else if (input.compare("3") == 0)
 		{
@@ -264,6 +290,8 @@ void decrypt(dict::Dictionary *dictionary)
 	}
 }
 
+
+// Test function used while debugging
 void testBruteForce(dict::Dictionary *dictionary)
 {
 	bool didItWork = dictionary->loadDictionary("d8.txt");

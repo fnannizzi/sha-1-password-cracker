@@ -24,6 +24,7 @@ namespace dcry
 
 	public:
 		Decrypt(dict::Dictionary *dict);
+		~Decrypt();
 		bool decrypt(std::string filename);
 		void addEntry(std::string hashed_password, int line_index);
 		void bruteForce();
@@ -33,5 +34,7 @@ namespace dcry
 
 
 }
+
+void testBase36Counter();
 
 #endif // DECRYPT_DEFINED
